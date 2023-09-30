@@ -1,7 +1,7 @@
 ---
 title: "Gov 50 Final Project"
-author: "Your Name Here"
-description: "My final project"
+author: "Juan C. Venancio"
+description: "Gov 50 Immigration Project"
 output:
   distill::distill_article:
     self_contained: false
@@ -11,4 +11,4 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to...
+I am interested in exploring data related to Mexico's evolving role as a destination country for many immigrants. Over the last decade, there has been a significant increase in asylum applications of immigrants attempting to permamently resettle in the country. I would like to explore this phenomenon, and compile/analyze data that showcase this recent trend over time. I am planning to use data from the Mexican Commission for Refugee Assistance. 
