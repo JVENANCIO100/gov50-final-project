@@ -17,3 +17,107 @@ I am interested in exploring data related to Mexico's evolving role as a destina
 ## Project Abstract 
 
 Does the type of asylum claim affect the percentage of asylum seekers that get refugee status granted in Mexico? In my research project, I hypothesize, that migrants who indicate political and humanitarian reasons for emigration from their country of origin tend to have higher possibilities to successfully obtain refugee status in Mexico. As a result, I expect that migrants who only file "economic reasons" for seeking asylum tend to have lower possibilities at refugee resettlement. Additionally, though the Mexican Government has made advances to expand their refugee granting criteria, because the 1951 UN Convention of Refugees provides a large number of successful reugee claims to migrants with "well-founded fear of persecution", then I also predict that Mexican institutions reject non-political actors at a significant larger rate. For this project, I will analyze the Mexican Government's Commission on Refugee Assistance open data set that I will use to assess the several reasons that migrants tend to leave their countries of origin. My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be described as "having migrated because of 'Political', 'Economic', 'Social'", or other reasons. The explanatory variable of interest is whether claiming a certain reason for migrating will grant you more of a benefit or not in refugee resettlement. If political/humanitarian applications have a higher rate of refugee success, then that will make my hypothesis correct. If other types of applications have a higher rate of success, then I will be proven wrong. In any case, I am also interested in observing the variability of application success and the type of application submitted. 
+
+
+
+```{r}
+#set up all libraries needed for this project
+library(tidyverse, ggplot2)
+
+#import data needed
+submitted_applications <- read.csv("//Users//jvenancio//Downloads//COMAR_Thesis_Data_Solicitudes.csv")
+application_results <- read.csv("//Users//jvenancio//Downloads//COMAR_Thesis_Data_Resoluciones.csv")
+
+```
+
+
+```{r}
+#count how many applications were submitted per year + create data table
+apps_sub_per_year <- submitted_applications |> 
+  count(AÑO) |> 
+  rename(applications = n, year = AÑO)
+
+```
+
+
+```{r}
+#count how many applications were processed per year + create data table
+apps_proc_per_year <- application_results |>
+  count(AÑO_RESOLUCION) |>
+  rename(applications = n, year = AÑO_RESOLUCION)
+
+```
+
+```{r}
+#count the end result of the applications that were processed in total from 2013-23
+apps_proc_result <- application_results |>
+  count(SENTIDO_RESOLUCIÓN) 
+
+```
+
+
+```{r}
+library(ggplot2)
+
+# data frames: apps_sub_per_year, apps_proc_per_year, apps_proc_result
+
+# Creating the line graph for submitted applications per year
+ggplot(data = apps_sub_per_year, aes(x = year, y = applications, group = 1)) +
+  geom_line(color = "blue") +
+  geom_point(color = "blue", size = 2) +
+  labs(title = "Submitted Asylum Applications in Mexico 2013-2023",
+       x = "Year",
+       y = "Number of Applications") +
+  theme_minimal()
+
+# Creating the line graph for processed applications per year
+ggplot(data = apps_proc_per_year, aes(x = year, y = applications, group = 1)) +
+  geom_line(color = "red") +
+  geom_point(color = "red", size = 3) +
+  labs(title = "Processed Asylum Applications in Mexico 2013-2023",
+       x = "Year",
+       y = "Number of Applications") +
+  theme_minimal()
+
+# Creating a bar plot for the result of processed applications
+ggplot(data = apps_proc_result, aes(x = SENTIDO_RESOLUCIÓN, y = n)) +
+  geom_bar(stat = "identity", fill = "black") +
+  labs(title = "Result of Processed Asylum Applications in Mexico 2013-2023",
+       x = "Result",
+       y = "Number of Applications") +
+  theme_minimal()
+
+
+
+
+```
+
+
+
+
+
+
+```{r}
+
+library(ggplot2)
+
+
+merged_data <- merge(apps_sub_per_year, apps_proc_per_year, by = "year", all = TRUE)
+
+
+ggplot(data = merged_data, aes(x = as.factor(year))) +
+  geom_bar(aes(y = applications.x, fill = "Submitted"), stat = "identity", position = "dodge", width = 0.4) +
+  geom_bar(aes(y = applications.y, fill = "Processed"), stat = "identity", position = "dodge", width = 0.4) +
+  labs(title = "Asylum Applications in Mexico (2013-2023)",
+       x = "Year",
+       y = "Number of Applications") +
+  scale_fill_manual(name = "Application Type", values = c("Submitted" = "blue", "Processed" = "red")) +
+  theme_minimal()
+
+
+
+```
+
+
+
+
