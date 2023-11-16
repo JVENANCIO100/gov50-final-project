@@ -16,7 +16,7 @@ I am interested in exploring data related to Mexico's evolving role as a destina
 
 ## Project Abstract 
 
-Does the type of asylum claim affect the percentage of asylum seekers that get refugee status granted in Mexico? In my research project, I hypothesize, that migrants who indicate political and humanitarian reasons for emigration from their country of origin tend to have higher possibilities to successfully obtain refugee status in Mexico. As a result, I expect that migrants who only file "economic reasons" for seeking asylum tend to have lower possibilities at refugee resettlement. Additionally, though the Mexican Government has made advances to expand their refugee granting criteria, because the 1951 UN Convention of Refugees provides a large number of successful reugee claims to migrants with "well-founded fear of persecution", then I also predict that Mexican institutions reject non-political actors at a significant larger rate. For this project, I will analyze the Mexican Government's Commission on Refugee Assistance open data set that I will use to assess the several reasons that migrants tend to leave their countries of origin. My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be described as "having migrated because of 'Political', 'Economic', 'Social'", or other reasons. The explanatory variable of interest is whether claiming a certain reason for migrating will grant you more of a benefit or not in refugee resettlement. If political/humanitarian applications have a higher rate of refugee success, then that will make my hypothesis correct. If other types of applications have a higher rate of success, then I will be proven wrong. In any case, I am also interested in observing the variability of application success and the type of application submitted. 
+Does a migrant's nationality impact the probability that they get refugee status granted in Mexico? In my research project, I hypothesize, that migrants who indicate a spanish-speaking nationality tend to have higher possibilities to successfully obtain refugee status in Mexico. As a result, I expect that migrants from Haiti, the non-Spanish Caribbean, and other parts of the world tend to have lower possibilities at refugee resettlement. Additionally, though the Mexican Government has made advances to expand their refugee granting criteria, because the 1951 UN Convention of Refugees provides a large number of successful reugee claims to migrants with "well-founded fear of persecution", then I also predict that Mexican institutions accept Spanish-speakong Latin-Americans at a significant larger rate. For this project, I will analyze the Mexican Government's Commission on Refugee Assistance open data set that I will use to assess the several reasons that migrants tend to leave their countries of origin. My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be the migrant's nationality. The explanatory variable of interest is whether the nationality impacts the likelihood that a migrant gets refugee status in Mexico. If Venezuelans, Hondurans, and other spanish speaking Latin Americans have a higher rate of refugee success, then that will make my hypothesis correct. If other types of nationalities have a higher rate of success, then I will be proven wrong. In any case, I am also interested in observing the variability of application success and the type of application submitted. 
 
 
 
@@ -32,12 +32,30 @@ application_results <- read.csv("//Users//jvenancio//Downloads//COMAR_Thesis_Dat
 
 
 ```{r}
+#count how many applications were submitted per nationality + create data table
+apps_sub_per_nationality <- submitted_applications |> 
+  count(NACIONALIDAD) |> 
+  rename(applications = n, Nationality = NACIONALIDAD)
+
+```
+
+```{r}
+
 #count how many applications were submitted per year + create data table
 apps_sub_per_year <- submitted_applications |> 
   count(AÑO) |> 
   rename(applications = n, year = AÑO)
 
+# Assuming 'submitted_applications' is your data frame
+
+
+
+
 ```
+
+
+
+
 
 
 ```{r}
@@ -53,7 +71,50 @@ apps_proc_per_year <- application_results |>
 apps_proc_result <- application_results |>
   count(SENTIDO_RESOLUCIÓN) 
 
+# Print the data table
+print(apps_sub_per_year)
+
+
 ```
+
+```{r}
+#count the end result of the applications that were processed (positive) in total from 2013-23 per nationality
+apps_proc_result_pos <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva")
+
+table(apps_proc_result_pos$NACIONALIDAD)
+
+```
+```{r}
+
+apps_proc_result_neg <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa")
+
+table(apps_proc_result_neg$NACIONALIDAD)
+
+
+
+
+
+
+```
+
+
+## Paragraph Summary: 
+These two data pieces are essential to answer my research question. As a reminder, I am investigating whether the nationality of an applicant impacts the likelihood that they receive refugee status in Mexico. My hypothesis was that if an applicant is from a Spanish-speaking country, then they are more likely to acquire refugee status. If an applicant is from a non-Spanish-speaking country, then they are more likely to get rejected. 
+
+Based on these data visuals, my hypothesis is correct. First, the nationality that is the most impacted is Haiti. According to my data set, while 2190 Haitians managed to acquire refugee status in Mexico, 10486 Haitian applicants have been rejected over the last decade. Haiti is a country in the Caribbean, whose official language is Haitian Creole. 
+
+On the contrary, migrants from Venezuela have been overwhelmingly granted refugee status over the last decade. Only 882 Venezuelans were denied refugee status, and 16,366 Venezuelans were granted refugee status. Venezuela is a Spanish-speaking country in South-America. 
+
+The reason why I specifically analyzed both cases is because arguably the biggest differences in their country's context are ethnic and cultural backgrounds. Both countries are experiencing the largest political instability contexts in contemporary Latin-American history, and are often impacted by economic and environmental destitution in the same. I would have expected that if nationality and the corresponding racial implications were not contributing determinants to refugee acquisition, then applicants from these two countries would have been admitted at statistically similar rates. However, despite their similar political and economic contexts, there is a drastically different outcome in refugee status determination in Mexico. 
+
+
+
+
+
+
+
 
 
 ```{r}
@@ -62,9 +123,11 @@ library(ggplot2)
 # data frames: apps_sub_per_year, apps_proc_per_year, apps_proc_result
 
 # Creating the line graph for submitted applications per year
-ggplot(data = apps_sub_per_year, aes(x = year, y = applications, group = 1)) +
+ggplot(data = apps_sub_per_year %>% filter(year != 2023),
+       aes(x = year, y = applications, group = 1)) +
   geom_line(color = "blue") +
   geom_point(color = "blue", size = 2) +
+  geom_smooth(linetype = 2, se = FALSE) + 
   labs(title = "Submitted Asylum Applications in Mexico 2013-2023",
        x = "Year",
        y = "Number of Applications") +
@@ -120,4 +183,31 @@ ggplot(data = merged_data, aes(x = as.factor(year))) +
 
 
 
+##
 
+Paragraph: Since 2013, the number of refugee applications in Mexico have exponentially increased. Simultaneously, this bar graph indicates how Mexico has also processed, though not completely, refugee applications over the years. This graph indicates that Mexico has become a destination country, and every year there is an increasing number of migrnats that attempt to permanently resettle in the country. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
