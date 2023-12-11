@@ -128,7 +128,7 @@ ggplot(data = apps_sub_per_year %>% filter(year != 2023),
   geom_line(color = "blue") +
   geom_point(color = "blue", size = 2) +
   geom_smooth(linetype = 2, se = FALSE) + 
-  labs(title = "Submitted Asylum Applications in Mexico 2013-2023",
+  labs(title = "Submitted Refugee Applications in Mexico 2013-2023",
        x = "Year",
        y = "Number of Applications") +
   theme_minimal()
@@ -137,7 +137,7 @@ ggplot(data = apps_sub_per_year %>% filter(year != 2023),
 ggplot(data = apps_proc_per_year, aes(x = year, y = applications, group = 1)) +
   geom_line(color = "red") +
   geom_point(color = "red", size = 3) +
-  labs(title = "Processed Asylum Applications in Mexico 2013-2023",
+  labs(title = "Processed Refugee Applications in Mexico 2013-2023",
        x = "Year",
        y = "Number of Applications") +
   theme_minimal()
@@ -171,7 +171,7 @@ merged_data <- merge(apps_sub_per_year, apps_proc_per_year, by = "year", all = T
 ggplot(data = merged_data, aes(x = as.factor(year))) +
   geom_bar(aes(y = applications.x, fill = "Submitted"), stat = "identity", position = "dodge", width = 0.4) +
   geom_bar(aes(y = applications.y, fill = "Processed"), stat = "identity", position = "dodge", width = 0.4) +
-  labs(title = "Asylum Applications in Mexico (2013-2023)",
+  labs(title = "Refugee Applications in Mexico (2013-2023)",
        x = "Year",
        y = "Number of Applications") +
   scale_fill_manual(name = "Application Type", values = c("Submitted" = "blue", "Processed" = "red")) +
@@ -192,6 +192,50 @@ Paragraph: Since 2013, the number of refugee applications in Mexico have exponen
 
 
 
+```{r}
+library(dplyr)
+
+spanish_speaking_countries <- c("Argentina","Chile","Colombia","Costa Rica","Cuba","Ecuador","El Salvador","EL SALVADOR","España","Guatemala","GUATEMALA","Guinea Ecuatorial","Honduras","Nicaragua","NICARAGUA","Panamá","Perú","República Dominicana","Uruguay","Venezuela","VENEZUELA")
+
+data <- application_results |>
+  mutate(spanish_speaking = if_else(NACIONALIDAD %in% spanish_speaking_countries, 1, 0),
+         approved = if_else(SENTIDO_RESOLUCIÓN == "Resolución Positiva", 1, 0))
+
+fit1 <- lm(approved ~ spanish_speaking, data = data)
+
+summary(fit1)
+
+```
+
+
+```{r}
+
+# Install and load necessary packages if not already installed
+if (!requireNamespace("ggplot2", quietly = TRUE)) {
+  install.packages("ggplot2")
+}
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
+# Load libraries
+library(ggplot2)
+library(dplyr)
+
+# Your linear regression model
+model <- lm(formula = approved ~ spanish_speaking, data = data)
+
+# Create a dataframe for predictions
+predictions <- data.frame(data, predicted = predict(model))
+
+# Plotting the data and the regression line
+ggplot(predictions, aes(x = spanish_speaking, y = approved)) +
+  geom_point() +  # Scatter plot of the data points
+  geom_line(aes(x = spanish_speaking, y = predicted), color = "blue", size = 1) +  # Regression line
+  labs(title = "Linear Regression: Correlation between Hispanic Nationality and Outcome",
+       x = "Hispanic Nationality",
+       y = "Positive Resolution Percentage") +
+  theme_minimal()
 
 
 
@@ -204,9 +248,210 @@ Paragraph: Since 2013, the number of refugee applications in Mexico have exponen
 
 
 
+```
+
+
+```{r}
+# Assuming 'application_results' is your data frame
+library(dplyr)
+library(knitr)
+
+# Filter for positive resolutions
+apps_proc_result_pos <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva")
+
+# Count applications per nationality for positive resolutions
+table_result <- table(apps_proc_result_pos$NACIONALIDAD)
+
+# Create a nice table
+kable(data.frame(Nationality = names(table_result), Applications = as.vector(table_result)),
+      col.names = c("Nationality", "Applications"),
+      caption = "Number of Applications with Positive Resolutions Per Nationality")
 
 
 
+
+
+
+
+```
+
+
+```{R}
+# Assuming 'application_results' is your data frame
+library(dplyr)
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+# Print the merged table
+print(merged_table)
+
+
+
+```
+
+```{r}
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- merged_table %>%
+  filter(Nationality %in% selected_countries)
+
+# Print or further process the filtered merged table
+print(filtered_merged_table)
+
+
+
+
+
+```
+
+```{r}
+# Assuming 'application_results' is your data frame
+library(dplyr)
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+# Add a percentage column
+merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
+                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100, 1), "%")
+
+# Filter out the total row
+filtered_merged_table <- merged_table %>%
+  filter(!is.na(Nationality))
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- filtered_merged_table %>%
+  filter(Nationality %in% selected_countries)
+
+# Print or further process the filtered merged table
+print(filtered_merged_table)
+
+
+
+kable(filtered_merged_table, format = "html",
+      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "Percentage of Positive Resolutions"),
+      caption = "Refugee Application Outcomes by Top Hispanic and Non-Hispanic Nationalities")
+
+
+
+
+
+
+
+
+
+
+```
+
+```{r}
+# Assuming 'application_results' is your data frame
+library(dplyr)
+library(knitr)
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results %>%
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+# Add a percentage column (rounded to the nearest whole number)
+merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
+                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100), "%")
+
+# Filter out the total row
+filtered_merged_table <- merged_table %>%
+  filter(!is.na(Nationality))
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- filtered_merged_table %>%
+  filter(Nationality %in% selected_countries)
+filtered_merged_table <- arrange(filtered_merged_table, desc(Percentage_Positive))
+
+# Create a nice-looking table
+kable(filtered_merged_table, format = "html",
+      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "Percentage of Positive Resolutions"),
+      caption = "Refugee Application Outcomes for Top Hispanic and Non-Hispanic Nationalities (2013-2023)")
+
+
+
+
+```
+
+```{r}
+# Assuming 'filtered_merged_table' is your data frame
+library(dplyr)
+library(ggplot2)
+
+# Filter the data for Venezuela and Haiti
+venezuela_data <- filtered_merged_table %>%
+  filter(Nationality == "Venezuela")
+
+haiti_data <- filtered_merged_table %>%
+  filter(Nationality == "Haití")
+
+# Check if the filtered data frames are not empty
+if (nrow(venezuela_data) > 0 && nrow(haiti_data) > 0) {
+  # Combine the data for Venezuela and Haiti
+  bar_data <- rbind(venezuela_data, haiti_data)
+
+  # Create a side-by-side bar plot
+  ggplot(bar_data, aes(x = Nationality, y = Positive_Resolutions, fill = Nationality)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title = "Positive Resolutions of Venezuelan and Haitian Applicants",
+         x = "Nationality",
+         y = "Count") +
+    scale_fill_manual(values = c("Venezuela" = "lightblue", "Haití" = "lightgreen")) +
+    theme_minimal()
+} else {
+  cat("No data found for Venezuela or Haiti.\n")
+}
 
 
 
