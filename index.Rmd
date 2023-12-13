@@ -1,17 +1,22 @@
 ---
-title: "Gov 50 Final Project"
+title: "Nationality-Based Discrimination in Mexico's Refugee Determination Process"
 author: "Juan C. Venancio"
 description: "Gov 50 Immigration Project"
-output:
+Question: "To What Extent Does Hispanic Nationality Impact Refugee Status Determination in Mexico?"  
+
   distill::distill_article:
     self_contained: false
 ---
 
 
 
-## Project thoughts
+## Introduction
 
-I am interested in exploring data related to Mexico's evolving role as a destination country for many immigrants. Over the last decade, there has been a significant increase in asylum applications of immigrants attempting to permamently resettle in the country. I would like to explore this phenomenon, and compile/analyze data that showcase this recent trend over time. I am planning to use data from the Mexican Commission for Refugee Assistance. 
+The 1951 United Nations Refugees Convention establishes the fundamental framework of international asylum law for member states of the United Nations. Since 1951, member states have met in other conventions to re-contextualize and re-interpret this legal framework in new correspondence to their national interests and needs (OAU Convention 1969 & 1984 Cartagena Declaration), but the legal principles establishing the definition of a refugee remain identical since its conception. According to the 1951 Convention, a refugee is any person that based on a well-founded fear of persecution on the basis of their race, religion, nationality, membership to a particular social group, or political opinion, merits the international protection of a sovereign entity outside of their country of origin. As it stands, in 2022, approximately 108.4 million people were forcibly displaced, and of those forcibly displaced, 35.3 million were categorized as refugees. According to the UNHCR, 76% of the world’s refugees are hosted in low and middle-income countries across the world. 
+
+Since its inception, Mexico has not historically been a destination country for migrants and refugees. At most, the country became a transit country for Central and South American migrants that headed to the United States during periods of increased generalized drug violence, civil wars, and economic destitution between the late 1980s and early 2000s. Over the last decade alone, the number of refugee applications submitted to and processed by the Mexican government has exponentially increased, and this data is indicative of Mexico's evolving role as a destination country for many immigrants. However, given the exponential increase in applications and Mexico's limited institutional capacity as a middle-income country, questions have emerged whether COMAR, Mexico's refugee processing institution, selective prioritizes applications of certain nationalities and therefore discriminates against others. I would like to explore this phenomenon, and compile/analyze data that uncover potential discriminatory institutional practices on the basis of Hispanic and non-Hispanic categorizations, as well as suggest potential policy recommendations. I am planning to use data from the Mexican Commission for Refugee Assistance. 
+
+
 
 
 ## Project Abstract 
