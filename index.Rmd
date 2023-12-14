@@ -1,11 +1,12 @@
 ---
 title: "Nationality-Based Discrimination in Mexico's Refugee Determination Process"
 author: "Juan C. Venancio"
-description: "Gov 50 Immigration Project"
-Question: "To What Extent Does Hispanic Nationality Impact Refugee Status Determination in Mexico?"  
-
-  distill::distill_article:
-    self_contained: false
+description: Gov 50 Immigration Project
+output: pdf_document
+distill::distill_article:
+  self_contained: no
+Question: To What Extent Does Hispanic Nationality Impact Refugee Status Determination
+  in Mexico?
 ---
 
 
@@ -21,7 +22,7 @@ Since its inception, Mexico has not historically been a destination country for 
 
 ## Project Abstract 
 
-Does a migrant's nationality impact the probability that they get refugee status granted in Mexico? In my research project, I hypothesize, that migrants who indicate a spanish-speaking nationality tend to have higher possibilities to successfully obtain refugee status in Mexico. As a result, I expect that migrants from Haiti, the non-Spanish Caribbean, and other parts of the world tend to have lower possibilities at refugee resettlement. Additionally, though the Mexican Government has made advances to expand their refugee granting criteria, because the 1951 UN Convention of Refugees provides a large number of successful reugee claims to migrants with "well-founded fear of persecution", then I also predict that Mexican institutions accept Spanish-speakong Latin-Americans at a significant larger rate. For this project, I will analyze the Mexican Government's Commission on Refugee Assistance open data set that I will use to assess the several reasons that migrants tend to leave their countries of origin. My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be the migrant's nationality. The explanatory variable of interest is whether the nationality impacts the likelihood that a migrant gets refugee status in Mexico. If Venezuelans, Hondurans, and other spanish speaking Latin Americans have a higher rate of refugee success, then that will make my hypothesis correct. If other types of nationalities have a higher rate of success, then I will be proven wrong. In any case, I am also interested in observing the variability of application success and the type of application submitted. 
+Does a migrant's nationality impact the probability that they get refugee status granted in Mexico? In my research project, I hypothesize, that migrants who indicate a Hispanic nationality tend to have higher possibilities to successfully obtain refugee status in Mexico. As a result, I expect that migrants from Haiti, the non-Spanish Caribbean, and other parts of the world tend to have lower possibilities at refugee resettlement. Additionally, though the Mexican Government has made advances to expand their refugee granting criteria, because the 1951 UN Convention of Refugees provides a large number of successful reugee claims to migrants with "well-founded fear of persecution", then I also predict that Mexican institutions accept Spanish-speakong Latin-Americans at a significant larger rate. For this project, I will analyze the Mexican Government's Commission on Refugee Assistance open data set that I will use to assess the several reasons that migrants tend to leave their countries of origin. My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be the migrant's nationality. The explanatory variable of interest is whether the nationality impacts the likelihood that a migrant gets refugee status in Mexico. If Venezuelans, Hondurans, and other spanish speaking Latin Americans have a higher rate of refugee success, then that will make my hypothesis correct. If other types of nationalities have a higher rate of success, then I will be proven wrong. In any case, I am also interested in observing the variability of application success and the type of application submitted. 
 
 
 
