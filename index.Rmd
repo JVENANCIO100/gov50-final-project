@@ -1,12 +1,12 @@
 ---
 title: "Nationality-Based Discrimination in Mexico's Refugee Determination Process"
 author: "Juan C. Venancio"
-description: "Gov 50 Immigration Project"
-output: pdf_document
+description: Gov 50 Immigration Project
+output:
+  html_document:
+    df_print: paged
 distill::distill_article:
   self_contained: no
-Question: "To What Extent Does Hispanic Nationality Impact Refugee Status Determination
-  in Mexico?"
 ---
 
 
