@@ -373,7 +373,7 @@ print(filtered_merged_table)
 
 
 kable(filtered_merged_table, format = "html",
-      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "Percentage of Positive Resolutions"),
+      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "% of Positive Resolutions"),
       caption = "Refugee Application Outcomes by Top Hispanic and Non-Hispanic Nationalities")
 
 
