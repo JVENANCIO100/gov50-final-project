@@ -1760,9 +1760,6 @@ library(tidyverse, ggplot2)</code></pre>
 #import data needed
 submitted_applications &lt;- read.csv(&quot;//Users//jvenancio//Downloads//COMAR_Thesis_Data_Solicitudes.csv&quot;)
 application_results &lt;- read.csv(&quot;//Users//jvenancio//Downloads//COMAR_Thesis_Data_Resoluciones.csv&quot;)</code></pre>
-</div>
-<div id="results" class="section level2">
-<h2>Results</h2>
 <pre class="r"><code>#count how many applications were submitted per nationality + create data table
 apps_sub_per_nationality &lt;- submitted_applications |&gt; 
   count(NACIONALIDAD) |&gt; 
@@ -1772,7 +1769,7 @@ apps_sub_per_year &lt;- submitted_applications |&gt;
   count(AÑO) |&gt; 
   rename(applications = n, year = AÑO)
 
-# Assuming &#39;submitted_applications&#39; is your data frame</code></pre>
+# &#39;submitted_applications&#39; is my data frame</code></pre>
 <pre class="r"><code>#count how many applications were processed per year + create data table
 apps_proc_per_year &lt;- application_results |&gt;
   count(AÑO_RESOLUCION) |&gt;
@@ -2567,6 +2564,9 @@ refugee applicants in Mexico between 2013-2023. I proceed with more
 interpretations of the data.</p>
 <p>These three tables are plotted summaries of my dependent
 variable.</p>
+</div>
+<div id="results" class="section level2">
+<h2>Results</h2>
 <pre class="r"><code>library(ggplot2)
 
 # data frames: apps_sub_per_year, apps_proc_per_year, apps_proc_result
@@ -2926,10 +2926,10 @@ library(dplyr)
 library(ggplot2)
 
 # Filter the data for Venezuela and Haiti
-venezuela_data &lt;- filtered_merged_table %&gt;%
+venezuela_data &lt;- filtered_merged_table |&gt;
   filter(Nationality == &quot;Venezuela&quot;)
 
-haiti_data &lt;- filtered_merged_table %&gt;%
+haiti_data &lt;- filtered_merged_table |&gt;
   filter(Nationality == &quot;Haití&quot;)
 
 # Check if the filtered data frames are not empty
@@ -3012,28 +3012,8 @@ data &lt;- application_results |&gt;
 
 fit1 &lt;- lm(approved ~ spanish_speaking + SEXO + EDAD, data = data)
 
-summary(fit1)</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = approved ~ spanish_speaking + SEXO + EDAD, data = data)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -0.6321 -0.3826 -0.1856  0.5144  0.9828 
-## 
-## Coefficients:
-##                    Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)       0.1157192  0.0049220   23.51   &lt;2e-16 ***
-## spanish_speaking  0.3134609  0.0029868  104.95   &lt;2e-16 ***
-## SEXOM            -0.1255475  0.0023638  -53.11   &lt;2e-16 ***
-## EDAD              0.0022549  0.0001109   20.34   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.4612 on 172049 degrees of freedom
-## Multiple R-squared:  0.08218,    Adjusted R-squared:  0.08217 
-## F-statistic:  5135 on 3 and 172049 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre class="r"><code>modelsummary(fit1)</code></pre>
+
+modelsummary(fit1)</code></pre>
 <table>
 <thead>
 <tr class="header">

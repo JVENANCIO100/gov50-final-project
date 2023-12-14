@@ -5,6 +5,7 @@ description: Gov 50 Immigration Project
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 distill::distill_article:
   self_contained: no
 ---
@@ -20,7 +21,7 @@ Since its inception, Mexico has not historically been a destination country for 
 
 
 
-## Project Abstract & Methodology
+## Project Abstract & Methodology (Data Section)
 
 Research Question: To What Extent Does Hispanic Nationality Impact Refugee Status Determination
 in Mexico?
@@ -29,16 +30,34 @@ Hypothesis: I hypothesize, that migrants who indicate a Hispanic nationality ten
 
 Methodology: My unit of measurement is whether an immigrant was granted refugee status or not. If the immigrant was provided with a refugee status, implying that the migrant was considered to have had a well-founded fear of persecution, then I will indicate that with 1 for successful application. If a migrant was rejected, then I will indicate that with 0. The independent variable will be the migrant's nationality. The explanatory variable of interest is whether the nationality impacts the likelihood that a migrant gets refugee status in Mexico. 
 
+To test this hypothesis, I used the Mexican Government's Commission on Refugee Assistance (COMAR) open data set on refugee applications to conduct a statistical data analysis and produce a linear regression model assessing refugee status determination in Mexico between 2013 and 2023. I downloaded the dataset and coded my visualizations, results, and subsequent models using R. 
+
+For this study, the independent variable is whether a refugee applicant’s nationality was of Hispanic origin. The dependent variable was the outcome of a migrant’s refugee application. The dataset provided by COMAR is composed of 172,053 refugee applications submitted since 2013. The data is separated into the 6 following categories: Year, Nationality, Sex, Age, Migration Motive, and Application Outcome. 
+I created a seventh column in the dataset called “Spanish Speaking”, indicating whether Spanish is the official language in the applicant’s country of origin. To specifically signal this in R code, if the refugee application received a positive result, then I indicated that with “1” for successful application. If a refugee application had a negative result, then that was indicated with “0”. The explanatory variable of interest is whether a nationality of Hispanic origin impacts the likelihood that a migrant gets refugee status in Mexico. If my hypothesis stands true, Venezuelans, Hondurans, and other Hispanic migrants will have a higher rate of refugee success. Conversely, migrants from non-Hispanic origin such as, but not limited to, Haitians, Brazilians, and other nationalities will subsequently have a lower rate of refugee application success. 
+
+Using this setup, I first coded a table calculating the percentage of positive resolutions for refugees in the top 6 most-prevalent Hispanic nationalities and top 5 most prevalent non-Hispanic nationalities present in the dataset. I chose to use 6 entries in the Hispanic nationality type and 5 non-Hispanic nationalities because there were missing variables in other entries. Then, I assess statistical differences of the top 6 Hispanic nationalities and the top non-Hispanic nationalities applying for refugee status in Mexico. In this statistical comparison I calculated the percentage of positive resolutions of all applications per nationality between 2013 and 2023. Next, I conducted a deep-dive comparison between Haitian and Venezuelan migrants applying for refugee status. I specifically chose to isolate these Hispanic and non-Hispanic cases specifically because of their similar political and economic status contexts. Additionally, because migrants from both countries submitted the largest volume of applications of both variable groups, it made comparing the dependent variable easier in this deep-dive analysis. Then, I conducted a linear regression analysis to study the relationship between Hispanic nationality and refugee application outcome of all 172,053 applications. In this linear regression, I used an applicant’s age and sex as control group variables because of the data randomization in this natural experiment. Lastly, I coded a graphical model depicting the statistical outcomes of the linear regression. 
+
+
+
+
+
+
+
+
+
 
 ```{r}
 #set up all libraries needed for this project
 library(tidyverse, ggplot2)
+library(knitr)
 
 #import data needed
 submitted_applications <- read.csv("//Users//jvenancio//Downloads//COMAR_Thesis_Data_Solicitudes.csv")
 application_results <- read.csv("//Users//jvenancio//Downloads//COMAR_Thesis_Data_Resoluciones.csv")
 
 ```
+
+
 
 
 ```{r}
@@ -56,7 +75,7 @@ apps_sub_per_year <- submitted_applications |>
   count(AÑO) |> 
   rename(applications = n, year = AÑO)
 
-# Assuming 'submitted_applications' is your data frame
+# 'submitted_applications' is my data frame
 
 
 
@@ -74,25 +93,29 @@ apps_proc_per_year <- application_results |>
   count(AÑO_RESOLUCION) |>
   rename(applications = n, year = AÑO_RESOLUCION)
 
-```
 
-```{r}
+
 #count the end result of the applications that were processed in total from 2013-23
 apps_proc_result <- application_results |>
   count(SENTIDO_RESOLUCIÓN) 
 
 # Print the data table
-print(apps_sub_per_year)
+kable(apps_proc_per_year, caption = "Applications Processed per Year")
 
 
 ```
-## Results
+
 ```{r}
 #count the end result of the applications that were processed (positive) in total from 2013-23 per nationality
 apps_proc_result_pos <- application_results |>
   filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva")
 
-table(apps_proc_result_pos$NACIONALIDAD)
+table_result <- table(apps_proc_result_pos$NACIONALIDAD)
+
+# Print the kable table
+kable(as.data.frame(table_result), caption = "Positive Resolutions per Nationality")
+
+
 
 ```
 ```{r}
@@ -100,8 +123,13 @@ table(apps_proc_result_pos$NACIONALIDAD)
 apps_proc_result_neg <- application_results |>
   filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa")
 
-table(apps_proc_result_neg$NACIONALIDAD)
+#create nice table of negative resolutions
 
+
+table_result2 <- table(apps_proc_result_neg$NACIONALIDAD)
+
+# Print the kable table
+kable(as.data.frame(table_result2), caption = "Negative Resolutions per Nationality")
 
 
 
@@ -109,21 +137,14 @@ table(apps_proc_result_neg$NACIONALIDAD)
 
 ```
 
+These three tables demonstrate the total number of positive resolutoins, and the total number of negative resolutions for all refugee applicants in Mexico between 2013-2023. I proceed with more interpretations of the data. 
 
-## Paragraph Summary: 
-These two data pieces are essential to answer my research question. As a reminder, I am investigating whether the nationality of an applicant impacts the likelihood that they receive refugee status in Mexico. My hypothesis was that if an applicant is from a Spanish-speaking country, then they are more likely to acquire refugee status. If an applicant is from a non-Spanish-speaking country, then they are more likely to get rejected. 
-
-Based on these data visuals, my hypothesis is correct. First, the nationality that is the most impacted is Haiti. According to my data set, while 2190 Haitians managed to acquire refugee status in Mexico, 10486 Haitian applicants have been rejected over the last decade. Haiti is a country in the Caribbean, whose official language is Haitian Creole. 
-
-On the contrary, migrants from Venezuela have been overwhelmingly granted refugee status over the last decade. Only 882 Venezuelans were denied refugee status, and 16,366 Venezuelans were granted refugee status. Venezuela is a Spanish-speaking country in South-America. 
-
-The reason why I specifically analyzed both cases is because arguably the biggest differences in their country's context are ethnic and cultural backgrounds. Both countries are experiencing the largest political instability contexts in contemporary Latin-American history, and are often impacted by economic and environmental destitution in the same. I would have expected that if nationality and the corresponding racial implications were not contributing determinants to refugee acquisition, then applicants from these two countries would have been admitted at statistically similar rates. However, despite their similar political and economic contexts, there is a drastically different outcome in refugee status determination in Mexico. 
+These three tables are plotted summaries of my dependent variable.
 
 
 
 
-
-
+## Results
 
 
 
@@ -133,7 +154,7 @@ library(ggplot2)
 # data frames: apps_sub_per_year, apps_proc_per_year, apps_proc_result
 
 # Creating the line graph for submitted applications per year
-ggplot(data = apps_sub_per_year %>% filter(year != 2023),
+ggplot(data = apps_sub_per_year |> filter(year != 2023),
        aes(x = year, y = applications, group = 1)) +
   geom_line(color = "blue") +
   geom_point(color = "blue", size = 2) +
@@ -152,21 +173,9 @@ ggplot(data = apps_proc_per_year, aes(x = year, y = applications, group = 1)) +
        y = "Number of Applications") +
   theme_minimal()
 
-# Creating a bar plot for the result of processed applications
-ggplot(data = apps_proc_result, aes(x = SENTIDO_RESOLUCIÓN, y = n)) +
-  geom_bar(stat = "identity", fill = "black") +
-  labs(title = "Result of Processed Asylum Applications in Mexico 2013-2023",
-       x = "Result",
-       y = "Number of Applications") +
-  theme_minimal()
-
-
 
 
 ```
-
-
-
 
 
 
@@ -193,9 +202,209 @@ ggplot(data = merged_data, aes(x = as.factor(year))) +
 
 
 
-##
+Description: Mexico as a Destination Country for Immigrants
 
-Paragraph: Since 2013, the number of refugee applications in Mexico have exponentially increased. Simultaneously, this bar graph indicates how Mexico has also processed, though not completely, refugee applications over the years. This graph indicates that Mexico has become a destination country, and every year there is an increasing number of migrnats that attempt to permanently resettle in the country. 
+Since 2013, the number of refugee applications in Mexico have exponentially increased. Simultaneously, this bar graph indicates how Mexico has also processed, though not completely, refugee applications over the years. This graph indicates that Mexico has become a destination country, and every year there is an increasing number of migrants that attempt to permanently resettle in the country. These visuals are designed to give a visual description of the migration context in Mexico. 
+
+```{r}
+
+# 'application_results' is my data frame
+library(dplyr)
+library(knitr)
+
+# Filter for positive resolutions
+apps_proc_result_pos <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva")
+
+# Count applications per nationality for positive resolutions
+table_result <- table(apps_proc_result_pos$NACIONALIDAD)
+
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") |>
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") |>
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- merged_table |>
+  filter(Nationality %in% selected_countries)
+
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") |>
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") |>
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+# Add a percentage column
+merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
+                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100, 1), "%")
+
+# Filter out the total row
+filtered_merged_table <- merged_table |>
+  filter(!is.na(Nationality))
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- filtered_merged_table |>
+  filter(Nationality %in% selected_countries)
+
+
+# Count applications per positive resolution type
+apps_proc_result_pos <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") |>
+  count(NACIONALIDAD)
+
+# Count applications per negative resolution type
+apps_proc_result_neg <- application_results |>
+  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") |>
+  count(NACIONALIDAD)
+
+# Merge the two tables
+merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+
+# Rename columns for clarity
+colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+
+# Add a percentage column (rounded to the nearest whole number)
+merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
+                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100), "%")
+
+# Filter out the total row
+filtered_merged_table <- merged_table |>
+  filter(!is.na(Nationality))
+
+# List of countries to filter
+selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
+
+# Filter the merged table for the selected countries
+filtered_merged_table <- filtered_merged_table |>
+  filter(Nationality %in% selected_countries)
+filtered_merged_table <- arrange(filtered_merged_table, desc(Percentage_Positive))
+
+
+# Create a nice-looking table
+kable(
+  filtered_merged_table, 
+  format = "html",
+  col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "Percentage of Positive Resolutions"),
+  caption = "Refugee Application Outcomes for Top Hispanic and Non-Hispanic Nationalities (2013-2023)",
+   align = "c", # optional, adjust alignment as needed
+  width = "100%", # set the table width
+  table.attr = 'style="width:100%;"' # set the width attribute in the HTML table tag
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+This chart is the first piece of data that begins to prove my hypothesis. I analyzed the top 6 Hispanic nationalities applying for refugee status in Mexico, and the top 5 non-Hispanic nationalities applying for refugee status. The most telling analysis is that among the top nationalities that obtained refugee status in Mexico were of Hispanic origin. Venezuelan migrants overwhelmingly received refugee status in this decade, following by applicants of Salvadoran, Honduran, Russian, Guatemalan and Nicaraguan origins. The next top nationalities were of non-Hispanic origin, and their application admissions rate was significantly lower. Nigerians and Ghanaians had around a 40% application success rate. Haitians were overwhelmingly rejected, whose admissions rate was nearly 17%. Brazilians and Indians had the lowest acceptance rates among the top non-Hispanic applicants. At first glance, this data supports my hypothesis, and I took a more nuanced approach to compare the Haitian and Venezuelan cases more specifically. 
+
+
+
+
+
+
+
+
+
+```{r}
+
+# 'filtered_merged_table' is my data frame
+library(dplyr)
+library(ggplot2)
+
+# Filter the data for Venezuela and Haiti
+venezuela_data <- filtered_merged_table |>
+  filter(Nationality == "Venezuela")
+
+haiti_data <- filtered_merged_table |>
+  filter(Nationality == "Haití")
+
+# Check if the filtered data frames are not empty
+if (nrow(venezuela_data) > 0 && nrow(haiti_data) > 0) {
+  # Combine the data for Venezuela and Haiti
+  bar_data <- rbind(venezuela_data, haiti_data)
+
+  # Create a side-by-side bar plot
+  ggplot(bar_data, aes(x = Nationality, y = Positive_Resolutions, fill = Nationality)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    labs(title = "Positive Resolutions of Venezuelan and Haitian Applicants",
+         x = "Nationality",
+         y = "Count") +
+    scale_fill_manual(values = c("Venezuela" = "lightblue", "Haití" = "lightgreen")) +
+    theme_minimal()
+} else {
+  cat("No data found for Venezuela or Haiti.\n")
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+## Paragraph Summary: 
+These two data pieces are also essential to answer my research question. As a reminder, I am investigating whether the nationality of an applicant impacts the likelihood that they receive refugee status in Mexico. My hypothesis was that if an applicant is from a Spanish-speaking country, then they are more likely to acquire refugee status. If an applicant is from a non-Spanish-speaking country, then they are more likely to get rejected. 
+
+Based on these data visuals, this deep-dive case analysis further corroborates my initial findings. First, the nationality that is the most negatively impacted is Haiti. According to my data set, while 2190 Haitians managed to acquire refugee status in Mexico, 10486 Haitian applicants have been rejected over the last decade. Haiti is a country in the Caribbean, whose official language is Haitian Creole. 
+
+On the contrary, migrants from Venezuela have been overwhelmingly granted refugee status over the last decade. Only 882 Venezuelans were denied refugee status, and 16,366 Venezuelans were granted refugee status. Venezuela is a Spanish-speaking country in South-America. 
+
+The reason why I specifically analyzed both cases is because arguably both countries are experiencing the similar political contexts in contemporary Latin-American history, and are often impacted by economic and environmental destitution in the same way. I would have expected that if nationality and the corresponding racial implications were not contributing determinants to refugee acquisition, then applicants from these two countries would have been admitted at statistically similar rates. However, despite their similar political and economic contexts, there is a drastically different outcome in refugee status determination in Mexico. As a result, the incredibly large disparity among admissions rate is telling of a correlation that benefits applicants of Hispanic origin at large. 
+
+
 
 
 
@@ -204,6 +413,10 @@ Paragraph: Since 2013, the number of refugee applications in Mexico have exponen
 
 ```{r}
 library(dplyr)
+library(modelsummary)
+library(broom)
+
+
 
 spanish_speaking_countries <- c("Argentina","Chile","Colombia","Costa Rica","Cuba","Ecuador","El Salvador","EL SALVADOR","España","Guatemala","GUATEMALA","Guinea Ecuatorial","Honduras","Nicaragua","NICARAGUA","Panamá","Perú","República Dominicana","Uruguay","Venezuela","VENEZUELA")
 
@@ -211,11 +424,34 @@ data <- application_results |>
   mutate(spanish_speaking = if_else(NACIONALIDAD %in% spanish_speaking_countries, 1, 0),
          approved = if_else(SENTIDO_RESOLUCIÓN == "Resolución Positiva", 1, 0))
 
-fit1 <- lm(approved ~ spanish_speaking, data = data)
+fit1 <- lm(approved ~ spanish_speaking + SEXO + EDAD, data = data)
 
-summary(fit1)
 
+modelsummary(fit1)
+tidy_results <- tidy(fit1)
+kable(tidy_results, caption = "Linear Regression Coefficients", digits = 3)
+ 
 ```
+
+
+In this research study, I ran a linear regression analysis assessing the impact that hispanic nationality has on refugee status determination in Mexico. For this linear regression, I assessed the relationship between the independent variable on the application outcome for all 172,053 processed applications. The linear analysis additionally evaluates the result of the regression in 0.001, 0.01, 0.05, 0.1, and 1 test values. 
+
+Null Hypothesis (H0): There is no significant impact of Hispanic nationality on the likelihood of a migrant being granted refugee status in Mexico. 
+
+Alternative Hypothesis (H1): Hispanic Nationality Significantly influences the likelihood of a migrant being granted refugee status in Mexico. 
+
+The results of my study indicated a p-value of <2.2e-16. In written form this p-value is 2.2 times 10 to the power of -16, indicating an exceedingly small value that passes is less than all alpha values indicated in my regression. 
+
+As a result of this incredibly small p-value, I am able to reject the null hypothesis with all given test values, and my linear regression model indicates that there is statistically significant data to indicate that Hispanic Nationality influences Refugee Status Determination in Mexico. In the context of my research question, the coefficient for the spanish-speaking variable was .313 percentage points, indicating that there is statistically significant data that indicates that an applicant of Hispanic nationality has a 31% higher probability to gain refugee admissions in Mexico, over applicants that indicated a non-Hispanic nationality. Interpreted further, non-Hispanic nationalities only have about a 11-12% chance of gaining refugee status admissions, as demonstrated by the y-intercept of the regression. Similarly, the control variables were an applicants sex and age. In comparison to the spanish-speaking variables, though their p-values were also small, the impact magintude of both variables was not as strong as the spanish-speaking variable.  
+
+Ultimately, the linear regression demonstrates a strong positive correlation between Hispanic nationality and refugee status admissions. However, because of possible confounding and external variables, I am not able to prove causality given the information. For example, in the context of migration, there various external factors that lead to different refugee status outcomes. Possible confounding variables include, but are not limited to, motive for migration, socioeconomic status of a migrant, legal aid at their disposal, and institutional capacity. However, I am confident that my data produced a very meaningful relationship. 
+
+
+
+
+
+
+
 
 
 ```{r}
@@ -261,208 +497,37 @@ ggplot(predictions, aes(x = spanish_speaking, y = approved)) +
 ```
 
 
-```{r}
-# Assuming 'application_results' is your data frame
-library(dplyr)
-library(knitr)
+This graphical model visually demonstrates the positive correlation between Hispanic Nationality and Positive Resolution Percentage. According to the linear regression, the y-intercept value is .116, which indicates that non-Hispanic refugee applicants on average have a 11-12% probability of obtaining refugee status in Mexico. In contrast, the spanish-speaking coefficient variable is calculated to be 0.32, which indicates that through the application of the “Hispanic Nationality” variable, refugee applicants from Hispanic origin on average have a 43% probability of gaining refugee status in Mexico. The data strongly supports my original hypothesis and demonstrates that these refugee status outcomes are strongly associated with Hispanic nationality. 
 
-# Filter for positive resolutions
-apps_proc_result_pos <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva")
 
-# Count applications per nationality for positive resolutions
-table_result <- table(apps_proc_result_pos$NACIONALIDAD)
 
-# Create a nice table
-kable(data.frame(Nationality = names(table_result), Applications = as.vector(table_result)),
-      col.names = c("Nationality", "Applications"),
-      caption = "Number of Applications with Positive Resolutions Per Nationality")
 
 
 
+## Conclusion
 
+Altogether, after thoroughly assessing the results of the statistical analysis and linear regression model, there is statistically significant evidence that demonstrates that refugee applicants of Hispanic origin are on average 31% more likely to be granted refugee status in Mexico. Out of any nationality, Venezuelans have overwhelmingly been granted refugee status in Mexico over the last decade. More specifically, nearly 95% of all refugee applicants from Venezuela have been approved. Out of 17,246 processed Venezuelan applications, 16,366 received positive outcomes. Conversely, Haitian applicants have the highest rejection total out of all non-Hispanic immigrants that apply for refugee status. Out of 12,676 Haitian applicants that submitted refugee applications throughout the last decade, only 2190 have ever been approved. Furthermore, whereas Venezuelans, Hondurans, and Salvadorans had the highest approval rates among the top Hispanic applicant nationalities, Indians, Brazilians, and Haitians had the lowest rates. It is important to note that among the top Hispanic and Non-Hispanic nationalities evaluated, there is variability in the percentage of positive application outcomes for each nationality. For example, whereas Venezuelan applicants experience a 95% refugee admissions rate, Central American countries like Guatemala and Nicaragua have nearly a 50% refugee admissions rate. On the contrary, the highest approval rating of any non-Hispanic nationality was 50%, and the majority had an approval rating below 40%. Despite the variability per individual nationality, on average, the percentage of positive resolutions among the Hispanic applicant pool is considerably higher than the non-Hispanic demographic, ultimately proving a strong correlation between Hispanic nationality and application outcome.
 
+For the purposes of future research, it is important to acknowledge limitations to the aforementioned statistical research study. First, grouping applicants into Hispanic and Non-Hispanic groups limits our ability to analyze the variability of refugee application outcomes at the individual level. For example, though there is a strong correlation between Hispanic nationality and refugee status outcome, the results of refugee applications are impacted by variability of data within the individual context of an applicant’s motivations to flee their country. As a result, a possible confounding variable could be an applicant’s motivation to migrate. Future studies could use the results of my study and analyze how applicant’s motivation impacted refugee status outcome. If I had more resources at my disposal, I would adjust my research model by requesting specific data from COMAR requesting contexts for migration at the individual level and then creating categories for migration called "reasons for migration" and use that as an individual control in my dataset. The reason I was not able to implement that in my research was because requesting individual-level applications takes a lot of time and negotiation at the governmental level. 
 
+Ultimately, the data results in this research demonstrate a strong positive correlation between Hispanic nationality and refugee application outcome. Despite certain limitations within the research, there is strong statistical evidence that proves the importance of addressing these discriminatory practices within Mexico's refugee processing system, and the outcomes of this research can help suggest policy recommendations to the Mexican government down the line, seeing the impact of this research go beyond the scope of this class. 
 
-```
 
 
-```{R}
-# Assuming 'application_results' is your data frame
-library(dplyr)
+## References
 
-# Count applications per positive resolution type
-apps_proc_result_pos <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
-  count(NACIONALIDAD)
 
-# Count applications per negative resolution type
-apps_proc_result_neg <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
-  count(NACIONALIDAD)
+1.  COMAR (2023) Open Data Set on Refugee Application Entries (2013-2023)
 
-# Merge the two tables
-merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
+2. Betts, A., Loescher, G., & Milner, J. (2011). UNHCR as a global institution: Structures, relationships and the politics of funding. In The United Nations High Commissioner for Refugees (UNHCR) (pp. 91–115). Routledge. https://doi.org/10.4324/9780203928394-12
 
-# Rename columns for clarity
-colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
+3. Foster, C. I. (2020). 'This is How We Refugee': Neoliberalism from Haiti to Palestine and the Economics of Refugee Form. Journal of Narrative Theory, 50(3), 348–375. https://doi.org/10.1353/JNT.2020.0018
 
-# Print the merged table
-print(merged_table)
+4. Kakabadse, A., & Kalu, K. (2009). Citizenship:A Reality Far From Ideal (1st ed. 2009.). Palgrave Macmillan UK: Imprint: Palgrave Macmillan.
 
 
+5. United States: The Los Angeles Declaration Could Represent a Big Step for Real Migration Cooperation across the Americas. (2022). In MENA Report. SyndiGate
 
-```
+6. UNHCR (2022) Operational Capacity. United Nations High Commissioner for Refugees
 
-```{r}
 
-# List of countries to filter
-selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
-
-# Filter the merged table for the selected countries
-filtered_merged_table <- merged_table %>%
-  filter(Nationality %in% selected_countries)
-
-# Print or further process the filtered merged table
-print(filtered_merged_table)
-
-
-
-
-
-```
-
-```{r}
-# Assuming 'application_results' is your data frame
-library(dplyr)
-
-# Count applications per positive resolution type
-apps_proc_result_pos <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
-  count(NACIONALIDAD)
-
-# Count applications per negative resolution type
-apps_proc_result_neg <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
-  count(NACIONALIDAD)
-
-# Merge the two tables
-merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
-
-# Rename columns for clarity
-colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
-
-# Add a percentage column
-merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
-                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100, 1), "%")
-
-# Filter out the total row
-filtered_merged_table <- merged_table %>%
-  filter(!is.na(Nationality))
-
-# List of countries to filter
-selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
-
-# Filter the merged table for the selected countries
-filtered_merged_table <- filtered_merged_table %>%
-  filter(Nationality %in% selected_countries)
-
-# Print or further process the filtered merged table
-print(filtered_merged_table)
-
-
-
-kable(filtered_merged_table, format = "html",
-      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "% of Positive Resolutions"),
-      caption = "Refugee Application Outcomes by Top Hispanic and Non-Hispanic Nationalities")
-
-
-
-
-
-
-
-
-
-
-```
-
-```{r}
-# Assuming 'application_results' is your data frame
-library(dplyr)
-library(knitr)
-
-# Count applications per positive resolution type
-apps_proc_result_pos <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Positiva") %>%
-  count(NACIONALIDAD)
-
-# Count applications per negative resolution type
-apps_proc_result_neg <- application_results %>%
-  filter(SENTIDO_RESOLUCIÓN == "Resolución Negativa") %>%
-  count(NACIONALIDAD)
-
-# Merge the two tables
-merged_table <- merge(apps_proc_result_pos, apps_proc_result_neg, by = "NACIONALIDAD", all = TRUE)
-
-# Rename columns for clarity
-colnames(merged_table) <- c("Nationality", "Positive_Resolutions", "Negative_Resolutions")
-
-# Add a percentage column (rounded to the nearest whole number)
-merged_table$Percentage_Positive <- paste0(round((merged_table$Positive_Resolutions / 
-                                                   (merged_table$Positive_Resolutions + merged_table$Negative_Resolutions)) * 100), "%")
-
-# Filter out the total row
-filtered_merged_table <- merged_table %>%
-  filter(!is.na(Nationality))
-
-# List of countries to filter
-selected_countries <- c("Honduras", "El Salvador", "Guatemala", "Haití", "Brasil", "Federación de Rusia", "Ghana", "India", "Nicaragua", "Venezuela", "Nígeria")
-
-# Filter the merged table for the selected countries
-filtered_merged_table <- filtered_merged_table %>%
-  filter(Nationality %in% selected_countries)
-filtered_merged_table <- arrange(filtered_merged_table, desc(Percentage_Positive))
-
-# Create a nice-looking table
-kable(filtered_merged_table, format = "html",
-      col.names = c("Nationality", "Positive Resolutions", "Negative Resolutions", "Percentage of Positive Resolutions"),
-      caption = "Refugee Application Outcomes for Top Hispanic and Non-Hispanic Nationalities (2013-2023)")
-
-
-
-
-```
-
-```{r}
-# Assuming 'filtered_merged_table' is your data frame
-library(dplyr)
-library(ggplot2)
-
-# Filter the data for Venezuela and Haiti
-venezuela_data <- filtered_merged_table %>%
-  filter(Nationality == "Venezuela")
-
-haiti_data <- filtered_merged_table %>%
-  filter(Nationality == "Haití")
-
-# Check if the filtered data frames are not empty
-if (nrow(venezuela_data) > 0 && nrow(haiti_data) > 0) {
-  # Combine the data for Venezuela and Haiti
-  bar_data <- rbind(venezuela_data, haiti_data)
-
-  # Create a side-by-side bar plot
-  ggplot(bar_data, aes(x = Nationality, y = Positive_Resolutions, fill = Nationality)) +
-    geom_bar(stat = "identity", position = "dodge") +
-    labs(title = "Positive Resolutions of Venezuelan and Haitian Applicants",
-         x = "Nationality",
-         y = "Count") +
-    scale_fill_manual(values = c("Venezuela" = "lightblue", "Haití" = "lightgreen")) +
-    theme_minimal()
-} else {
-  cat("No data found for Venezuela or Haiti.\n")
-}
-
-
-
-```
